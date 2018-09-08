@@ -1,118 +1,84 @@
-import React, { Component } from "react"
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native"
-import { Navigation } from "react-native-navigation"
-import firebase from "react-native-firebase"
-import { GoogleSignin, GoogleSigninButton } from "react-native-google-signin"
-import { Consumer } from "../../../containers/Provider"
+import React, { Component } from "react";
+import { Text, View } from "react-native";
+import firebase from "react-native-firebase";
 
 export default class extends Component {
-  render() {
-    return (
-      <Consumer>
-        {({ auth }) => <Connected {...this.props} auth={auth} />}
-      </Consumer>
-    )
-  }
-}
-
-class Connected extends Component {
   state = {
-    email: "",
-  }
+    fcmToken: "",
+    message: {},
+    enabled: 0
+  };
 
-  componentDidMount() {
-    this.setupGoogleSignin()
-  }
+  async componentDidMount() {
+    const fcmToken = await firebase.messaging().getToken();
+    console.log(fcmToken);
 
-  setupGoogleSignin = async () => {
-    try {
-      await GoogleSignin.hasPlayServices({ autoResolve: true })
-      await GoogleSignin.configure({
-        iosClientId:
-          "222855909542-hlvg250s8i41b77pd59ig58cppuvhc4g.apps.googleusercontent.com",
-        webClientId:
-          "222855909542-i5c3bbas2mfdepjs6jgcnsjsc3kqqfl8.apps.googleusercontent.com",
-        offlineAccess: false,
-      })
-    } catch (err) {
-      console.log("Google signin error", err.code, err.message)
-    }
-  }
-
-  signIn() {
-    GoogleSignin.signIn()
-      .then(async data => {
+    this.onTokenRefreshListener = firebase
+      .messaging()
+      .onTokenRefresh(fcmToken => {
         this.setState({
-          email: data.email,
-        })
-        await this.setAuth(data)
-        Navigation.dismissModal()
-      })
-      .catch(err => {
-        console.log("WRONG SIGNIN", err)
-      })
-      .done()
+          fcmToken
+        });
+      });
+
+    const enabled = await firebase.messaging().hasPermission();
+    console.log(enabled);
+    await firebase.messaging().requestPermission();
+
+    this.setState({
+      fcmToken,
+      enabled
+    });
+
+    this.messageListener = firebase.messaging().onMessage(message => {
+      // Process your message as required
+      this.setState({ message });
+    });
+
+    // ① プッシュ通知を押してクローズからの起動
+    const notificationOpen = await firebase
+      .notifications()
+      .getInitialNotification();
+
+    if (notificationOpen) {
+      console.log(notificationOpen);
+    }
+
+    // ② プッシュ通知を押してバックグラウンドからの復帰
+    this.notificationOpenedListener = firebase
+      .notifications()
+      .onNotificationOpened(notificationOpen => {
+        console.log(notificationOpen);
+      });
+
+    // ③ アプリが起動中にプッシュ通知が来た時
+    this.notificationListener = firebase
+      .notifications()
+      .onNotification(notification => {
+        console.log(notification);
+      });
   }
-
-  signOut = async () => {
-    await GoogleSignin.revokeAccess()
-    await GoogleSignin.signOut()
-  }
-
-  setAuth = async data => {
-    const credential = firebase.auth.GoogleAuthProvider.credential(
-      data.idToken,
-      data.accessToken
-    )
-
-    const currentUser = await firebase
-      .auth()
-      .signInAndRetrieveDataWithCredential(credential)
-
-    await this.props.auth.setSession()
+  componentWillUnmount() {
+    this.onTokenRefreshListener();
+    this.messageListener();
+    this.notificationOpenedListener();
+    this.notificationListener();
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        {this.state.email ? (
-          <View>
-            <Text>Welcome: {this.state.email}</Text>{" "}
-          </View>
-        ) : null}
-
-        <GoogleSigninButton
-          style={{ width: 212, height: 48 }}
-          size={GoogleSigninButton.Size.Standard}
-          color={GoogleSigninButton.Color.Auto}
-          onPress={() => this.signIn()}
-        />
+      <View>
+        <Text>test</Text>
+        <View>
+          <Text>fcmToken: {this.state.fcmToken}</Text>
+        </View>
+        <View>
+          <Text>enabled: {this.state.enabled}</Text>
+        </View>
+        <View>
+          <Text>message: {JSON.stringify(this.state.message)}</Text>
+        </View>
       </View>
-    )
+    );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: "center",
-    margin: 10,
-  },
-  instructions: {
-    textAlign: "center",
-    color: "#333333",
-    marginBottom: 5,
-  },
-})

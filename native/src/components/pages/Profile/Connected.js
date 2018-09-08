@@ -1,9 +1,8 @@
-import React, { Component } from "react"
-import { View } from "react-native"
-import { Text, Button } from "react-native-elements"
-import firebase from "react-native-firebase"
-import { GoogleSignin } from "react-native-google-signin"
-import { Consumer } from "../../../containers/Provider"
+import React, { Component } from "react";
+import { View } from "react-native";
+import { Button } from "react-native-elements";
+import { GoogleSignin } from "react-native-google-signin";
+import { Consumer } from "../../../containers/Provider";
 
 export default class extends Component {
   render() {
@@ -11,21 +10,21 @@ export default class extends Component {
       <Consumer>
         {({ auth }) => <Connected {...this.props} auth={auth} />}
       </Consumer>
-    )
+    );
   }
 }
 
 class Connected extends Component {
   onSignOut = async () => {
-    GoogleSignin.revokeAccess()
-    GoogleSignin.signOut()
-    await this.props.auth.signOut()
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
+    await this.props.auth.signOut();
 
     this.props.navigator.showModal({
       screen: "native.SignIn",
-      title: "Sign In",
-    })
-  }
+      title: "Sign In"
+    });
+  };
 
   render() {
     return (
@@ -35,7 +34,7 @@ class Connected extends Component {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          width: "100%",
+          width: "100%"
         }}
       >
         <Button
@@ -44,6 +43,6 @@ class Connected extends Component {
           onPress={this.onSignOut}
         />
       </View>
-    )
+    );
   }
 }
