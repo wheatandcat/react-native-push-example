@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -19,6 +20,7 @@ public class MainApplication extends NavigationApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFirebasePackage(),
           new RNGoogleSigninPackage(),
           new RNFirebasePackage(),
           new RNFirebaseAuthPackage()
