@@ -11,7 +11,8 @@
 #import <Crashlytics/Crashlytics.h>
 #import <React/RCTBundleURLProvider.h>
 #import <RNGoogleSignin/RNGoogleSignin.h>
-
+#import "RNFirebaseNotifications.h"
+#import "RNFirebaseMessaging.h"
 #import "RCCManager.h"
 
 #import <React/RCTRootView.h>
@@ -33,6 +34,9 @@
   [[RCCManager sharedInstance] initBridgeWithBundleURL:jsCodeLocation launchOptions:launchOptions];
 
   [FIRApp configure];
+  
+  [RNFirebaseNotifications configure];
+  
   [Fabric with:@[[Crashlytics class]]];
 
   return YES;
@@ -43,6 +47,20 @@
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
 
   return [RNGoogleSignin application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
+fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+  [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+}
+
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+  [[RNFirebaseNotifications instance] didReceiveLocalNotification:notification];
 }
 
 @end

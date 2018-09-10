@@ -1,67 +1,53 @@
 import React, { Component } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Alert } from "react-native";
 import firebase from "react-native-firebase";
 
 export default class extends Component {
   state = {
     fcmToken: "",
     message: {},
-    enabled: 0
+    notification: {},
+    notificationDisplayed: {},
+    enabled: 0,
+    notificationBody: ""
   };
 
   async componentDidMount() {
     const fcmToken = await firebase.messaging().getToken();
-    console.log(fcmToken);
-
-    this.onTokenRefreshListener = firebase
-      .messaging()
-      .onTokenRefresh(fcmToken => {
-        this.setState({
-          fcmToken
-        });
-      });
-
     const enabled = await firebase.messaging().hasPermission();
-    console.log(enabled);
-    await firebase.messaging().requestPermission();
+    if (!enabled) {
+      await firebase.messaging().requestPermission();
+    }
 
     this.setState({
       fcmToken,
       enabled
     });
 
-    this.messageListener = firebase.messaging().onMessage(message => {
-      // Process your message as required
-      this.setState({ message });
-    });
+    let self = this;
 
-    // ① プッシュ通知を押してクローズからの起動
-    const notificationOpen = await firebase
-      .notifications()
-      .getInitialNotification();
-
-    if (notificationOpen) {
-      console.log(notificationOpen);
-    }
-
-    // ② プッシュ通知を押してバックグラウンドからの復帰
-    this.notificationOpenedListener = firebase
-      .notifications()
-      .onNotificationOpened(notificationOpen => {
-        console.log(notificationOpen);
-      });
-
-    // ③ アプリが起動中にプッシュ通知が来た時
     this.notificationListener = firebase
       .notifications()
       .onNotification(notification => {
-        console.log(notification);
+        Alert.alert(self.state.notificationBody, "aaa");
+
+        if (self.state.notificationBody === notification.body) {
+          return;
+        }
+        self.setState({
+          notificationBody: notification.body
+        });
+
+        const notification1 = new firebase.notifications.Notification()
+          .setNotificationId("notificationId")
+          .setTitle("シェアフル")
+          .setBody(notification.body)
+          .setData({ key1: "value1", key2: "value2" });
+
+        firebase.notifications().displayNotification(notification1);
       });
   }
   componentWillUnmount() {
-    this.onTokenRefreshListener();
-    this.messageListener();
-    this.notificationOpenedListener();
     this.notificationListener();
   }
 
@@ -77,6 +63,15 @@ export default class extends Component {
         </View>
         <View>
           <Text>message: {JSON.stringify(this.state.message)}</Text>
+        </View>
+        <View>
+          <Text>notification: {JSON.stringify(this.state.notification)}</Text>
+        </View>
+        <View>
+          <Text>
+            notificationDisplayed:
+            {JSON.stringify(this.state.notificationDisplayed)}
+          </Text>
         </View>
       </View>
     );

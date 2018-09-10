@@ -1,14 +1,15 @@
-import React, { Component } from "react"
-import { Navigation, ScreenVisibilityListener } from "react-native-navigation"
-import { ApolloProvider } from "react-apollo"
-import Auth from "./Auth"
-import Provider from "./Provider"
-import Users from "../components/pages/Users/Connected"
-import User from "../components/pages/User/Connected"
-import SignIn from "../components/pages/SignIn/Page"
-import Profile from "../components/pages/Profile/Connected"
+import React, { Component } from "react";
+import { Navigation, ScreenVisibilityListener } from "react-native-navigation";
+import { ApolloProvider } from "react-apollo";
+import Auth from "./Auth";
+import Provider from "./Provider";
+import Users from "../components/pages/Users/Connected";
+import User from "../components/pages/User/Connected";
+import SignIn from "../components/pages/SignIn/Page";
+import Profile from "../components/pages/Profile/Connected";
+import Notification from "../components/atoms/Notification";
 
-const auth = new Auth()
+const auth = new Auth();
 
 const withProvider = (Component, client) => {
   return class extends Component {
@@ -19,24 +20,27 @@ const withProvider = (Component, client) => {
             <Component {...this.props} />
           </Provider>
         </ApolloProvider>
-      )
+      );
     }
-  }
-}
+  };
+};
 
 export function registerScreens(client) {
   Navigation.registerComponent("native.Users", () =>
     withProvider(Users, client)
-  )
+  );
   Navigation.registerComponent("native.Users.User", () =>
     withProvider(User, client)
-  )
+  );
   Navigation.registerComponent("native.Profile", () =>
     withProvider(Profile, client)
-  )
+  );
   Navigation.registerComponent("native.SignIn", () =>
     withProvider(SignIn, client)
-  )
+  );
+  Navigation.registerComponent("native.Notification", () =>
+    withProvider(Notification, client)
+  );
 }
 
 export function registerScreenVisibilityListener() {
@@ -50,6 +54,6 @@ export function registerScreenVisibilityListener() {
       ),
     willDisappear: ({ screen }) =>
       console.log(`Screen will disappear ${screen}`),
-    didDisappear: ({ screen }) => console.log(`Screen disappeared ${screen}`),
-  }).register()
+    didDisappear: ({ screen }) => console.log(`Screen disappeared ${screen}`)
+  }).register();
 }
