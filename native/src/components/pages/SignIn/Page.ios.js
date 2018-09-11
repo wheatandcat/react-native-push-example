@@ -13,8 +13,6 @@ export default class extends Component {
   };
 
   async componentDidMount() {
-    console.log(this);
-
     const fcmToken = await firebase.messaging().getToken();
     const enabled = await firebase.messaging().hasPermission();
     if (!enabled) {
