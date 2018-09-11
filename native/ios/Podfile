@@ -7,4 +7,7 @@ target 'native' do
   pod 'Firebase/Messaging', '~> 5.3.0'
 
   pod 'Google/SignIn'
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
 end
