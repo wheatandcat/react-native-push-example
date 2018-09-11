@@ -1,78 +1,78 @@
-import { Platform, AsyncStorage } from "react-native"
-import moment from "moment"
-import firebase from "react-native-firebase"
-import { Navigation } from "react-native-navigation"
+import { Platform, AsyncStorage } from "react-native";
+import moment from "moment";
+import firebase from "react-native-firebase";
+import { Navigation } from "react-native-navigation";
 import {
   registerScreens,
-  registerScreenVisibilityListener,
-} from "./containers/Routers"
-import { ApolloClient } from "apollo-client"
-import { setContext } from "apollo-link-context"
-import { createHttpLink } from "apollo-link-http"
-import { InMemoryCache } from "apollo-cache-inmemory"
+  registerScreenVisibilityListener
+} from "./containers/Routers";
+import { ApolloClient } from "apollo-client";
+import { setContext } from "apollo-link-context";
+import { createHttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
-const host = "https://us-central1-example-202505.cloudfunctions.net"
+const host = "https://us-central1-example-202505.cloudfunctions.net";
 
 const httpLink = createHttpLink({
-  uri: `${host}/app/graphql`,
-})
+  uri: `${host}/app/graphql`
+});
 
 const getIdToken = async () => {
-  let idToken = await AsyncStorage.getItem("id_token")
-  const expiration = await AsyncStorage.getItem("expiration")
+  let idToken = await AsyncStorage.getItem("id_token");
+  const expiration = await AsyncStorage.getItem("expiration");
 
   if (Number(expiration) > moment().unix()) {
-    return idToken
+    return idToken;
   }
 
-  idToken = await firebase.auth().currentUser.getIdToken(true)
+  idToken = await firebase.auth().currentUser.getIdToken(true);
   // console.log(idToken)
 
-  await AsyncStorage.setItem("id_token", idToken)
-  await AsyncStorage.setItem("expiration", `${moment().unix() + 60 * 60}`)
+  await AsyncStorage.setItem("id_token", idToken);
+  await AsyncStorage.setItem("expiration", `${moment().unix() + 60 * 60}`);
 
-  return idToken
-}
+  return idToken;
+};
 
 const authLink = setContext(async (_, { headers }) => {
-  const token = await getIdToken()
+  const token = await getIdToken();
 
   if (!token) {
     return {
-      headers,
-    }
+      headers
+    };
   }
 
   return {
     headers: {
       ...headers,
-      Authorization: `Bearer ${token}`,
-    },
-  }
-})
+      Authorization: `Bearer ${token}`
+    }
+  };
+});
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-})
+  cache: new InMemoryCache()
+});
 
-registerScreens(client)
-registerScreenVisibilityListener()
+registerScreens(client);
+registerScreenVisibilityListener();
 
 const tabs = [
   {
     label: "users",
     screen: "native.Users",
     icon: require("../img/list.png"),
-    title: "users",
+    title: "users"
   },
   {
     label: "profile",
     screen: "native.Profile",
     icon: require("../img/user.png"),
-    title: "profile",
-  },
-]
+    title: "profile"
+  }
+];
 
 Navigation.startTabBasedApp({
   tabs,
@@ -81,7 +81,7 @@ Navigation.startTabBasedApp({
     tabBarBackgroundColor: "#ffffff",
     tabBarButtonColor: "#888888",
     tabBarSelectedButtonColor: "#FF9933",
-    tabFontFamily: "BioRhyme-Bold",
+    tabFontFamily: "BioRhyme-Bold"
   },
   appStyle: {
     tabBarBackgroundColor: "#003a66",
@@ -92,8 +92,18 @@ Navigation.startTabBasedApp({
     navigationBarColor: "#003a66",
     navBarBackgroundColor: "#ffffff",
     statusBarColor: "#002b4c",
-    tabFontFamily: "BioRhyme-Bold",
-  },
-})
+    tabFontFamily: "BioRhyme-Bold"
+  }
+});
 
-console.disableYellowBox = true
+// ここで監視
+firebase.notifications().onNotification(notification => {
+  const item = new firebase.notifications.Notification()
+    .setNotificationId("notificationId")
+    .setTitle("test-app")
+    .setBody(notification.body);
+
+  firebase.notifications().displayNotification(item);
+});
+
+console.disableYellowBox = true;

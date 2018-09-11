@@ -13,6 +13,8 @@ export default class extends Component {
   };
 
   async componentDidMount() {
+    console.log(this);
+
     const fcmToken = await firebase.messaging().getToken();
     const enabled = await firebase.messaging().hasPermission();
     if (!enabled) {
@@ -23,32 +25,6 @@ export default class extends Component {
       fcmToken,
       enabled
     });
-
-    let self = this;
-
-    this.notificationListener = firebase
-      .notifications()
-      .onNotification(notification => {
-        Alert.alert(self.state.notificationBody, "aaa");
-
-        if (self.state.notificationBody === notification.body) {
-          return;
-        }
-        self.setState({
-          notificationBody: notification.body
-        });
-
-        const notification1 = new firebase.notifications.Notification()
-          .setNotificationId("notificationId")
-          .setTitle("シェアフル")
-          .setBody(notification.body)
-          .setData({ key1: "value1", key2: "value2" });
-
-        firebase.notifications().displayNotification(notification1);
-      });
-  }
-  componentWillUnmount() {
-    this.notificationListener();
   }
 
   render() {
