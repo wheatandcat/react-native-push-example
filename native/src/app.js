@@ -10,6 +10,7 @@ import { ApolloClient } from "apollo-client";
 import { setContext } from "apollo-link-context";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import "./notification";
 
 const host = "https://us-central1-example-202505.cloudfunctions.net";
 
@@ -94,16 +95,6 @@ Navigation.startTabBasedApp({
     statusBarColor: "#002b4c",
     tabFontFamily: "BioRhyme-Bold"
   }
-});
-
-// ここで監視
-firebase.notifications().onNotification(notification => {
-  const item = new firebase.notifications.Notification()
-    .setNotificationId("notificationId")
-    .setTitle("test-app")
-    .setBody(notification.body);
-
-  firebase.notifications().displayNotification(item);
 });
 
 console.disableYellowBox = true;

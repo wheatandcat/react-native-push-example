@@ -1,53 +1,122 @@
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 import React, { Component } from "react";
-import { Text, View, Alert } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import firebase from "react-native-firebase";
-
-export default class extends Component {
-  state = {
-    fcmToken: "",
-    message: {},
-    notification: {},
-    notificationDisplayed: {},
-    enabled: 0,
-    notificationBody: ""
-  };
-
+const instructions = Platform.select({
+  ios: "Press Cmd+R to reload,\n" + "Cmd+D or shake for dev menu",
+  android:
+    "Double tap R on your keyboard to reload,\n" +
+    "Shake or press menu button for dev menu"
+});
+export default class App extends Component {
   async componentDidMount() {
-    const fcmToken = await firebase.messaging().getToken();
-    const enabled = await firebase.messaging().hasPermission();
-    if (!enabled) {
-      await firebase.messaging().requestPermission();
+    const notificationOpen = await firebase
+      .notifications()
+      .getInitialNotification();
+    if (notificationOpen) {
+      const action = notificationOpen.action;
+      const notification = notificationOpen.notification;
+      var seen = [];
+      alert(
+        JSON.stringify(notification.data, function(key, val) {
+          if (val != null && typeof val == "object") {
+            if (seen.indexOf(val) >= 0) {
+              return;
+            }
+            seen.push(val);
+          }
+          return val;
+        })
+      );
     }
+    const channel = new firebase.notifications.Android.Channel(
+      "test-channel",
+      "Test Channel",
+      firebase.notifications.Android.Importance.Max
+    ).setDescription("My apps test channel");
+    // Create the channel
+    firebase.notifications().android.createChannel(channel);
+    this.notificationDisplayedListener = firebase
+      .notifications()
+      .onNotificationDisplayed(notification => {
+        console.log("notificationDisplayedListener");
 
-    this.setState({
-      fcmToken,
-      enabled
-    });
+        // Process your notification as required
+        // ANDROID: Remote notifications do not contain the channel ID. You will have to specify this manually if you'd like to re-display the notification.
+      });
+    this.notificationListener = firebase
+      .notifications()
+      .onNotification(notification => {
+        console.log("notificationListener");
+
+        // Process your notification as required
+        notification.android
+          .setChannelId("test-channel")
+          .android.setSmallIcon("ic_launcher");
+        firebase.notifications().displayNotification(notification);
+      });
+    this.notificationOpenedListener = firebase
+      .notifications()
+      .onNotificationOpened(notificationOpen => {
+        console.log("notificationOpenedListener");
+
+        // Get the action triggered by the notification being opened
+        const action = notificationOpen.action;
+        // Get information about the notification that was opened
+        const notification = notificationOpen.notification;
+        var seen = [];
+        alert(
+          JSON.stringify(notification.data, function(key, val) {
+            if (val != null && typeof val == "object") {
+              if (seen.indexOf(val) >= 0) {
+                return;
+              }
+              seen.push(val);
+            }
+            return val;
+          })
+        );
+        firebase
+          .notifications()
+          .removeDeliveredNotification(notification.notificationId);
+      });
   }
-
+  componentWillUnmount() {
+    this.notificationDisplayedListener();
+    this.notificationListener();
+    this.notificationOpenedListener();
+  }
   render() {
     return (
-      <View>
-        <Text>test</Text>
-        <View>
-          <Text>fcmToken: {this.state.fcmToken}</Text>
-        </View>
-        <View>
-          <Text>enabled: {this.state.enabled}</Text>
-        </View>
-        <View>
-          <Text>message: {JSON.stringify(this.state.message)}</Text>
-        </View>
-        <View>
-          <Text>notification: {JSON.stringify(this.state.notification)}</Text>
-        </View>
-        <View>
-          <Text>
-            notificationDisplayed:
-            {JSON.stringify(this.state.notificationDisplayed)}
-          </Text>
-        </View>
+      <View style={styles.container}>
+        <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <Text style={styles.instructions}>To get started, edit App.js</Text>
+        <Text style={styles.instructions}>{instructions}</Text>
       </View>
     );
   }
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: "center",
+    margin: 10
+  },
+  instructions: {
+    textAlign: "center",
+    color: "#333333",
+    marginBottom: 5
+  }
+});

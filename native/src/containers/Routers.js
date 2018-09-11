@@ -27,10 +27,10 @@ const withProvider = (Component, client) => {
 
 export function registerScreens(client) {
   Navigation.registerComponent("native.Users", () =>
-    withProvider(Users, client)
+    withProvider(SignIn, client)
   );
   Navigation.registerComponent("native.Users.User", () =>
-    withProvider(User, client)
+    withProvider(SignIn, client)
   );
   Navigation.registerComponent("native.Profile", () =>
     withProvider(Profile, client)
