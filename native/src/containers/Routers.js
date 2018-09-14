@@ -1,46 +1,37 @@
-import React, { Component } from "react";
+import React from "react";
 import { Navigation, ScreenVisibilityListener } from "react-native-navigation";
 import { ApolloProvider } from "react-apollo";
+import Main from "../components/pages/Main/Page";
 import Auth from "./Auth";
 import Provider from "./Provider";
-import Users from "../components/pages/Users/Connected";
-import User from "../components/pages/User/Connected";
-import SignIn from "../components/pages/SignIn/Page";
-import Profile from "../components/pages/Profile/Connected";
-import Notification from "../components/atoms/Notification";
+import NotificationProvider from "./Notification";
 
 const auth = new Auth();
+
+let first = true;
 
 const withProvider = (Component, client) => {
   return class extends Component {
     render() {
-      return (
+      const Comp = (
         <ApolloProvider client={client}>
           <Provider auth={auth}>
-            <Component {...this.props} />
+            <NotificationProvider first={first} {...this.props}>
+              <Component {...this.props} />
+            </NotificationProvider>
           </Provider>
         </ApolloProvider>
       );
+
+      first = false;
+
+      return Comp;
     }
   };
 };
 
 export function registerScreens(client) {
-  Navigation.registerComponent("native.Users", () =>
-    withProvider(SignIn, client)
-  );
-  Navigation.registerComponent("native.Users.User", () =>
-    withProvider(SignIn, client)
-  );
-  Navigation.registerComponent("native.Profile", () =>
-    withProvider(Profile, client)
-  );
-  Navigation.registerComponent("native.SignIn", () =>
-    withProvider(SignIn, client)
-  );
-  Navigation.registerComponent("native.Notification", () =>
-    withProvider(Notification, client)
-  );
+  Navigation.registerComponent("native.Main", () => withProvider(Main, client));
 }
 
 export function registerScreenVisibilityListener() {

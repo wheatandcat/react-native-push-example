@@ -10,7 +10,6 @@ import { ApolloClient } from "apollo-client";
 import { setContext } from "apollo-link-context";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import "./notification";
 
 const host = "https://us-central1-example-202505.cloudfunctions.net";
 
@@ -62,16 +61,16 @@ registerScreenVisibilityListener();
 
 const tabs = [
   {
-    label: "users",
-    screen: "native.Users",
+    label: "Main",
+    screen: "native.Main",
     icon: require("../img/list.png"),
-    title: "users"
+    title: "Main"
   },
   {
-    label: "profile",
-    screen: "native.Profile",
+    label: "Sub",
+    screen: "native.Main",
     icon: require("../img/user.png"),
-    title: "profile"
+    title: "Sub"
   }
 ];
 
