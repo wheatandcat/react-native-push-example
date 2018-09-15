@@ -1,6 +1,6 @@
 import firebase from "react-native-firebase";
 
-export const start = onNotificationData => {
+export const start = (onNotificationData, onTokenRefresh) => {
   // サーバーには↓のトークンを保存するように修正
   // await firebase.messaging().getToken();
 
@@ -12,5 +12,9 @@ export const start = onNotificationData => {
     firebase.notifications().displayNotification(notification);
 
     onNotificationData(notification.data);
+  });
+
+  firebase.messaging().onTokenRefresh(fcmToken => {
+    onTokenRefresh(fcmToken);
   });
 };

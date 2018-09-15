@@ -1,3 +1,10 @@
+# start
+
+```
+npm run dev
+```
+
+
 
 # local datastore
 

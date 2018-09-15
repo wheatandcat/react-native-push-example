@@ -21,23 +21,6 @@ export default (request: Request, response: Response) => {
       return;
     }
 
-    const key = datastore.key([kind, fcmTokens[0].key]);
-    const date = new Date();
-
-    const data = {
-      userId: request.body.userId,
-      token: request.body.token,
-      created: date.getTime()
-    };
-    const value = { key, data };
-    datastore
-      .save(value)
-      .then(() => {
-        response.status(201).send(data);
-      })
-      .catch(error => {
-        console.log(error);
-        response.status(500).send(error);
-      });
+    response.status(200).send(fcmTokens);
   });
 };

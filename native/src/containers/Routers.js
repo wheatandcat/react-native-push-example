@@ -1,6 +1,5 @@
 import React from "react";
 import { Navigation, ScreenVisibilityListener } from "react-native-navigation";
-import { ApolloProvider } from "react-apollo";
 import Main from "../components/pages/Main/Page";
 import Auth from "./Auth";
 import Provider from "./Provider";
@@ -10,17 +9,15 @@ const auth = new Auth();
 
 let first = true;
 
-const withProvider = (Component, client) => {
+const withProvider = Component => {
   return class extends Component {
     render() {
       const Comp = (
-        <ApolloProvider client={client}>
-          <Provider auth={auth}>
-            <NotificationProvider first={first} {...this.props}>
-              <Component {...this.props} />
-            </NotificationProvider>
-          </Provider>
-        </ApolloProvider>
+        <Provider auth={auth}>
+          <NotificationProvider first={first} {...this.props}>
+            <Component {...this.props} />
+          </NotificationProvider>
+        </Provider>
       );
 
       first = false;

@@ -11,12 +11,15 @@ admin.initializeApp({
 
 const Datastore = require("@google-cloud/datastore");
 const datastore = new Datastore(config);
-const kind = "FcmToken";
+const kind = "FcmTokenLog";
 
 export default (request: Request, response: Response) => {
   const query = datastore
     .createQuery(kind)
-    .filter("userId", "=", request.body.userId);
+    .filter("userId", "=", request.body.userId)
+    .order("created", {
+      descending: true
+    });
 
   datastore.runQuery(query).then(results => {
     const fcmTokens = results[0];

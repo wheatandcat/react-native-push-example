@@ -1,8 +1,6 @@
 import firebase from "react-native-firebase";
 
-export const start = async onNotificationData => {
-  // await firebase.messaging().getToken();
-
+export const start = async (onNotificationData, onTokenRefresh) => {
   const enabled = await firebase.messaging().hasPermission();
   if (!enabled) {
     await firebase.messaging().requestPermission();
@@ -18,5 +16,9 @@ export const start = async onNotificationData => {
 
     firebase.notifications().displayNotification(item);
     onNotificationData(notification.data);
+  });
+
+  firebase.messaging().onTokenRefresh(fcmToken => {
+    onTokenRefresh(fcmToken);
   });
 };

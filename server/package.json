@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node dist/src/main.js",
+    "build": "tsc src/main.ts --outDir ./dist/",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts"
   },
   "author": "wheatandcat",

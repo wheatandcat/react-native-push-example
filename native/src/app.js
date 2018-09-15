@@ -1,62 +1,11 @@
 import { Platform, AsyncStorage } from "react-native";
-import moment from "moment";
-import firebase from "react-native-firebase";
 import { Navigation } from "react-native-navigation";
 import {
   registerScreens,
   registerScreenVisibilityListener
 } from "./containers/Routers";
-import { ApolloClient } from "apollo-client";
-import { setContext } from "apollo-link-context";
-import { createHttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
 
-const host = "https://us-central1-example-202505.cloudfunctions.net";
-
-const httpLink = createHttpLink({
-  uri: `${host}/app/graphql`
-});
-
-const getIdToken = async () => {
-  let idToken = await AsyncStorage.getItem("id_token");
-  const expiration = await AsyncStorage.getItem("expiration");
-
-  if (Number(expiration) > moment().unix()) {
-    return idToken;
-  }
-
-  idToken = await firebase.auth().currentUser.getIdToken(true);
-  // console.log(idToken)
-
-  await AsyncStorage.setItem("id_token", idToken);
-  await AsyncStorage.setItem("expiration", `${moment().unix() + 60 * 60}`);
-
-  return idToken;
-};
-
-const authLink = setContext(async (_, { headers }) => {
-  const token = await getIdToken();
-
-  if (!token) {
-    return {
-      headers
-    };
-  }
-
-  return {
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`
-    }
-  };
-});
-
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-});
-
-registerScreens(client);
+registerScreens();
 registerScreenVisibilityListener();
 
 const tabs = [
