@@ -22,17 +22,27 @@ platform :android do
   end
 
   desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+  lane :create_apk do
+
+    gradle(task: "clean")
+    
+    gradle(task: "assembleRelease")
+
+    sh("jarsigner", "-storepass", ENV["KEY_STORE_PASSWORD"], "-verbose", "-keystore", "../app/android-release.keystore", "../app/build/outputs/apk/release/app-release-unsigned.apk", "android-release")
+
   end
 
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+  desc "deploy fabric"
+  lane :fabric do
+
+    crashlytics(
+      api_token: ENV["FABRIC_API_TOKEN"],
+      build_secret: ENV["FABRIC_API_SECRET"],
+      apk_path: 'app/build/outputs/apk/release/app-release-unsigned.apk',
+      notes: "by fastlane",
+      notifications: true,
+      groups: "develop",
+    )
+
   end
 end

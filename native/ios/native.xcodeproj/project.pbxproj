@@ -1536,7 +1536,7 @@
 				CODE_SIGN_ENTITLEMENTS = native/native.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 201809180155;
+				CURRENT_PROJECT_VERSION = 201809180322;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 7KWTGL2ZDY;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1557,7 +1557,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.push.notifications;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.graphql.native;
 				PRODUCT_NAME = native;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1573,7 +1573,7 @@
 				CODE_SIGN_ENTITLEMENTS = native/native.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 201809180155;
+				CURRENT_PROJECT_VERSION = 201809180322;
 				DEVELOPMENT_TEAM = 7KWTGL2ZDY;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1593,7 +1593,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.push.notifications;
+				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.graphql.native;
 				PRODUCT_NAME = native;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

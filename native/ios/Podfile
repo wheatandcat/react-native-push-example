@@ -10,4 +10,6 @@ target 'native' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'ReactNativeFabric', :path => '../node_modules/react-native-fabric'
+
 end

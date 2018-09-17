@@ -21,7 +21,7 @@ platform :ios do
 
     sigh(
       force: false,
-      app_identifier: "org.reactjs.native.example.push.notifications",
+      app_identifier: "org.reactjs.native.example.graphql.native",
       adhoc: true,
     )
 
