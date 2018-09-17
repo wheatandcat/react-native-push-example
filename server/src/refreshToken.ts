@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { config } from "./config";
+import config from "./config";
 
 const Datastore = require("@google-cloud/datastore");
 const datastore = new Datastore(config);
+
 const kind = "FcmTokenLog";
 
 export default (request: Request, response: Response) => {
@@ -13,7 +14,7 @@ export default (request: Request, response: Response) => {
       descending: true
     });
 
-  datastore.runQuery(query).then(results => {
+  datastore.runQuery(query).then((results: any) => {
     const fcmTokens = results[0];
 
     if (fcmTokens.length === 0) {
@@ -35,7 +36,7 @@ export default (request: Request, response: Response) => {
       .then(() => {
         response.status(201).send(data);
       })
-      .catch(error => {
+      .catch((error: any) => {
         console.log(error);
         response.status(500).send(error);
       });

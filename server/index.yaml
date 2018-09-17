@@ -1,0 +1,7 @@
+indexes:
+
+- kind: FcmTokenLog
+  properties:
+  - name: userId
+  - name: created
+    direction: desc

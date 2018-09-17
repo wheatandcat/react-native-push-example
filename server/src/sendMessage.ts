@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
 import { Request, Response } from "express";
-import { config } from "./config";
-
-const serviceAccount = require("./serviceAccountKey.json");
+import config from "./config";
+import serviceAccount from "./serviceAccountKey.json";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -21,33 +20,39 @@ export default (request: Request, response: Response) => {
       descending: true
     });
 
-  datastore.runQuery(query).then(results => {
-    const fcmTokens = results[0];
+  datastore
+    .runQuery(query)
+    .then((results: any) => {
+      const fcmTokens = results[0];
 
-    if (fcmTokens.length === 0) {
-      response.status(404).send();
-      return;
-    }
+      if (fcmTokens.length === 0) {
+        response.status(404).send();
+        return;
+      }
 
-    const message = {
-      notification: {
-        title: "通知",
-        body: "今日も一日頑張ろう！"
-      },
-      token: fcmTokens[0].token
-    };
+      const message = {
+        notification: {
+          title: "通知",
+          body: "今日も一日頑張ろう！"
+        },
+        token: fcmTokens[0].token
+      };
 
-    admin
-      .messaging()
-      .send(message)
-      .then(result => {
-        console.log("Successfully sent message:", result);
+      admin
+        .messaging()
+        .send(message)
+        .then(result => {
+          console.log("Successfully sent message:", result);
 
-        response.status(200).send(result);
-      })
-      .catch(error => {
-        console.log("Error sending message:", error);
-        response.status(500).send(error);
-      });
-  });
+          response.status(200).send(result);
+        })
+        .catch(error => {
+          console.log("Error sending message:", error);
+          response.status(500).send(error);
+        });
+    })
+    .catch((error: any) => {
+      console.log(error);
+      response.status(500).send(error);
+    });
 };
