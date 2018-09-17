@@ -44,7 +44,7 @@ export default (request: Request, response: Response) => {
         .then(result => {
           console.log("Successfully sent message:", result);
 
-          response.status(200).send(result);
+          response.status(200).send();
         })
         .catch(error => {
           console.log("Error sending message:", error);

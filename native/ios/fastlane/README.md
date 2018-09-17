@@ -16,11 +16,16 @@ or alternatively using `brew cask install fastlane`
 
 # Available Actions
 ## iOS
-### ios beta
+### ios create_ipa
 ```
-fastlane ios beta
+fastlane ios create_ipa
 ```
-Push a new beta build to TestFlight
+create ipa
+### ios fabric
+```
+fastlane ios fabric
+```
+deploy fabric
 
 ----
 

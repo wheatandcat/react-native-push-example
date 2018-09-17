@@ -24,6 +24,8 @@ project.xcworkspace
 native.app.dSYM.zip
 production_org.reactjs.native.example.graphql.native.*
 development_org.reactjs.native.example.graphql.native.*
+.env.default
+*.mobileprovision
 
 # Android/IntelliJ
 #

@@ -5,6 +5,8 @@ import { start as notification } from "../lib/notification";
 
 const userId = 2;
 
+const host = "https://example-202504.appspot.com";
+
 export default class extends Component {
   async componentDidMount() {
     if (!this.props.first) {
@@ -12,16 +14,14 @@ export default class extends Component {
     }
 
     let token = await AsyncStorage.getItem("fcmToken");
-    console.log("---------------------");
     console.log(token);
 
     if (!token) {
       // ストレージに無い時は作成
-      console.log("---------------------");
       token = await firebase.messaging().getToken();
       console.log(token);
 
-      const response = await fetch("http://localhost:8080/saveToken", {
+      const response = await fetch(`${host}/saveToken`, {
         headers: {
           "Content-Type": "application/json"
         },
@@ -48,7 +48,7 @@ export default class extends Component {
   };
 
   refreshToken = async token => {
-    const response = await fetch("http://localhost:8080/refreshToken", {
+    const response = await fetch(`${host}/refreshToken`, {
       headers: {
         "Content-Type": "application/json"
       },

@@ -16,10 +16,46 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
-    increment_build_number(xcodeproj: "native.xcodeproj")
-    build_app(scheme: "native")
-    upload_to_testflight
+  desc "create ipa"
+  lane :create_ipa do
+
+    sigh(
+      force: false,
+      app_identifier: "org.reactjs.native.example.push.notifications",
+      adhoc: true,
+    )
+
+    increment_version_number(
+      version_number: "0.0.0",
+      xcodeproj: "native.xcodeproj"
+    )
+
+
+    increment_build_number(
+      build_number: Time.now.strftime("%Y%m%d%H%M"),
+      xcodeproj: "native.xcodeproj"
+    )
+
+    build_app(
+      workspace: "native.xcworkspace",
+      clean: true,
+      scheme: "native",
+      output_name: "native.ipa",
+      export_method: "ad-hoc"
+    )
+  end
+
+  desc "deploy fabric"
+  lane :fabric do
+    crashlytics(
+      crashlytics_path: "./Crashlytics.framework",
+      api_token: ENV["FABRIC_API_TOKEN"],
+      build_secret: ENV["FABRIC_API_SECRET"],
+      ipa_path: 'native.ipa',
+      notes: "fastlaneによる配布",
+      notifications: true,
+      groups: "develop"
+    )
+    
   end
 end

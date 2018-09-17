@@ -1,4 +1,5 @@
 import firebase from "react-native-firebase";
+import { Alert } from "react-native";
 
 export const start = async (onNotificationData, onTokenRefresh) => {
   const enabled = await firebase.messaging().hasPermission();
@@ -7,14 +8,17 @@ export const start = async (onNotificationData, onTokenRefresh) => {
   }
 
   firebase.notifications().onNotification(notification => {
-    console.log(notification);
-
     const item = new firebase.notifications.Notification()
       .setNotificationId("notificationId")
       .setTitle("プッシュtestアプリ")
-      .setBody(notification.body);
+      .setBody(notification.body)
+      .setData({
+        key1: "value1",
+        key2: "value2"
+      });
 
     firebase.notifications().displayNotification(item);
+
     onNotificationData(notification.data);
   });
 
